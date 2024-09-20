@@ -1,0 +1,70 @@
+name: auth_324
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.1 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  get:
+  shared_preferences:
+  pinput:
+  intl:
+  flutter_svg: ^2.0.9
+  dio:
+  encrypt:
+  device_info_plus:
+  local_captcha: ^1.0.4
+  email_otp: ^3.0.2
+  cached_network_image:
+  glassmorphism_ui: ^0.3.0
+  tflite_flutter: ^0.9.0
+#  sensors_plus: ^5.0.1
+#  adaptive_theme: ^3.6.0
+#  vector_map_tiles: ^6.0.2
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+
+    # - assets/data/
+    - assets/images/
+    - assets/fonts/
+    - assets/tf_models/
+    # - assets/dummy_images/
+    # - assets/media/
+    # - assets/svgs/
+
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/nunito/w500.ttf
+          weight: 500
+        - asset: assets/fonts/nunito/w600.ttf
+          weight: 600
+        - asset: assets/fonts/nunito/w700.ttf
+          weight: 700
+        - asset: assets/fonts/nunito/w800.ttf
+          weight: 800
+        - asset: assets/fonts/nunito/w900.ttf
+          weight: 900
+    - family: Book
+      fonts:
+        - asset: assets\fonts\book\book-regular.ttf
+          weight: 600
+        - asset: assets\fonts\book\book-bold.ttf
+          weight: 900
