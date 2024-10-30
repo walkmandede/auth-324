@@ -159,7 +159,7 @@ class RegisterPasswordPage extends StatelessWidget {
                             onPressed: () {
                               vibrateNow();
                               if(xValid){
-                                controller.onClickEmailNext();
+                                controller.onClickPasswordNext();
                               }
                             },
                             style: ElevatedButton.styleFrom(

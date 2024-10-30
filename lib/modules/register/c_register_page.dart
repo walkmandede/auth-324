@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:auth_324/_common/constants/app_functions.dart';
 import 'package:auth_324/_common/models/m_password_model.dart';
+import 'package:auth_324/_services/database_services/database_service.dart';
+import 'package:auth_324/_services/encrypt_service/encrypt_service.dart';
 import 'package:auth_324/_services/overlays_services/dialog/dialog_service.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +16,6 @@ class RegisterPageController extends GetxController{
   TextEditingController txtOtp = TextEditingController(text: "");
   TextEditingController txtCaptcha = TextEditingController(text: "");
   TextEditingController txtPassword = TextEditingController(text: "");
-  TextEditingController txtConfirmPassword = TextEditingController(text: "");
 
   ValueNotifier<bool> xValidEmail = ValueNotifier(false);
   ValueNotifier<bool> xValidPassword = ValueNotifier(false);
@@ -188,11 +189,37 @@ class RegisterPageController extends GetxController{
 
   Future<void> onClickPasswordNext() async{
 
+    DialogService().showLoadingDialog(loadingText: "Loading ... Please wait!");
+    String? dbResult = "Something went wrong!";
+    try{
+      EncryptService encryptService = EncryptService();
+      final email = txtEmail.text;
+      final password = txtPassword.text;
+      final encryptedPwd = encryptService.encryptText(plainText: password);
+      if(encryptedPwd==null){
+        throw Exception("Fail to encrypt password!");
+      }
+      DatabaseService databaseService = DatabaseService();
+      dbResult = await databaseService.register(
+          email: email,
+          password: encryptedPwd,
+      );
+    }
+    catch(e){
+      superPrint(e);
+      //
+    }
+    DialogService().dismissDialog();
+
+    if(dbResult==null){
+      //success
+      DialogService().showTransactionDialog(text: "Successfully registered!\nPlease log in to continue!");
+    }
+    else{
+      DialogService().showTransactionDialog(text: dbResult);
+    }
   }
 
-  Future<void> onClickConfirmPasswordNext() async{
-
-  }
 
   Future<void> onClickCaptchaNext() async{
     pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.linear);

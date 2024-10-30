@@ -77,7 +77,7 @@ class RegisterCaptchaPage extends StatelessWidget {
                         chars: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
                         backgroundColor: Colors.transparent,
                         length: 6,
-                        fontSize: 45.0,
+                        fontSize: 60.0,
                         textColors: [
                           theme.text1,
                           theme.text1
@@ -89,7 +89,7 @@ class RegisterCaptchaPage extends StatelessWidget {
                           theme.primaryOver,
                           theme.primary
                         ],
-                        caseSensitive: true,
+                        caseSensitive: false,
                         codeExpireAfter: const Duration(minutes: 10),
                       ),
                     );
