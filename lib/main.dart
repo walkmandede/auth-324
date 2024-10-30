@@ -72,8 +72,8 @@ class MyApp extends StatelessWidget {
             ),
             useMaterial3: false,
           ),
-          // home: const AuthMainPage()
-          home: const PasswordTestPage()
+          home: const AuthMainPage()
+          // home: const PasswordTestPage()
       ),
     );
   }
@@ -141,6 +141,16 @@ class _PasswordTestPageState extends State<PasswordTestPage> {
                       },).toList()
                     ],
                   );
+                },
+              ),
+              ValueListenableBuilder(
+                valueListenable: passwordModel,
+                builder: (context, pm, child) {
+                  return ElevatedButton(onPressed: () async{
+                    superPrint("start");
+                    final result = await pm.getAiScore();
+                    print(result);
+                  }, child: const Text("Get AI Score"));
                 },
               )
             ],

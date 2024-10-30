@@ -68,7 +68,7 @@ class DialogService {
     }
   }
 
-  void showLoadingDialog({String loadingText = "လုပ်ဆောင်နေပါသည် "}) {
+  void showLoadingDialog({String loadingText = "Loading ... Please wait!"}) {
     if (dialogRoute != null) {
       dismissDialog();
     }

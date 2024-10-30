@@ -60,6 +60,33 @@ class RegisterEmailOtpPage extends StatelessWidget {
                 closeKeyboardWhenCompleted: true,
 
               ),
+              10.heightBox(xResponsive: false),
+              SizedBox(
+                height: Get.height * 0.1,
+                child: Center(
+                  child: ValueListenableBuilder(
+                    valueListenable: controller.otpRefreshCooldown,
+                    builder: (context, refreshCoolDown, child) {
+                      if(refreshCoolDown<1){
+                        return TextButton(onPressed: () {
+                          controller.sendOTP();
+                        }, child: Text("Click here to resend OTP to the email : ${controller.txtEmail.text}",style: TextStyle(
+                          color: theme.primary,
+                        ),textAlign: TextAlign.center,));
+                      }
+                      else{
+                        return Text(
+                          "Resend OTP in $refreshCoolDown s",
+                          style: TextStyle(
+                              color: theme.redDanger
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
+              10.heightBox(),
               const Spacer(),
               Row(
                 children: [
@@ -106,7 +133,7 @@ class RegisterEmailOtpPage extends StatelessWidget {
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           );
         },

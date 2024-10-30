@@ -58,7 +58,7 @@ class AuthMainPage extends StatelessWidget {
                           // Text(),
                           25.heightBox(),
                           Text(
-                            "Shop. Smile. Repeat.",
+                            "The application name here".toUpperCase(),
                             style: TextStyle(
                                 color: theme.text1,
                                 fontSize: AppConstants.fontSizeXL.lfs(),
@@ -67,8 +67,7 @@ class AuthMainPage extends StatelessWidget {
                           SizedBox(
                             width: Get.width * 0.8,
                             child: Text(
-                              "E-Commerce application"
-                                  .tr,
+                              "The application slogan here".tr,
                               style: TextStyle(
                                   color: theme.text2,
                                   fontSize: AppConstants.fontSizeM.lfs(),

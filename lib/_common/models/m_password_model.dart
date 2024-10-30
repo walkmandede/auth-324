@@ -3,7 +3,17 @@ import 'package:auth_324/_common/_widgets/fitted_widget.dart';
 import 'package:auth_324/_common/constants/app_functions.dart';
 import 'package:auth_324/_common/data/d_password_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:get/get.dart';
+
+enum EnumPasswordAIStrength{
+  weak(label: "Weak",color: Colors.redAccent),
+  fair(label: "Fair",color: Colors.yellowAccent),
+  strong(label: "Strong",color: Colors.greenAccent);
+
+  final String label;
+  final Color color;
+  const EnumPasswordAIStrength({required this.label,required this.color});
+}
 
 class PasswordModel{
   String password;
@@ -74,14 +84,35 @@ class PasswordModel{
     return result;
   }
 
-  void getAiScore() async{
-    final interpreter = await Interpreter.fromAsset('assets/tf_models/password_strength_model.tflite');
-    List<List<double>> input = [
-      [8,1,5,1,1],  // (length,upperCaseCount,lowerCaseCount,DigitCount,SpecialCount)
-    ];
-    List output = List.filled(1, 0).reshape([1, 1]); // Assuming model has a single output
-    interpreter.run(input, output);
-    print("Prediction: ${output[0]}");
+  Future<EnumPasswordAIStrength?> getAiScore() async{
+    final client = GetConnect(timeout: const Duration(seconds: 30));
+    EnumPasswordAIStrength? result;
+    try{
+      final response = await client.get("https://password-strength-backend.onrender.com/classify_password?password=$password");
+      if(response.isOk){
+        superPrint(response.body);
+        if(response.statusCode! == 200){
+          double point = double.tryParse(response.body["strength_score"].toString())??0;
+          if(point==0){
+            result = EnumPasswordAIStrength.weak;
+          }
+          else if(point == 1){
+            result = EnumPasswordAIStrength.fair;
+          }
+          else if(point == 2){
+            result = EnumPasswordAIStrength.strong;
+          }
+
+        }
+      }
+      else{
+
+      }
+    }
+    catch(e){
+      //
+    }
+    return result;
   }
 
 }

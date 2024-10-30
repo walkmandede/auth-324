@@ -26,37 +26,41 @@ class RegisterCaptchaPage extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    "Captcha".tr,
-                    style: TextStyle(
-                      color: theme.text1,
-                      fontSize: AppConstants.fontSizeXXL,
-                      fontWeight: FontWeight.bold,
+              SizedBox(
+                height: Get.height * 0.05,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Captcha".tr,
+                      style: TextStyle(
+                        color: theme.text1,
+                        fontSize: AppConstants.fontSizeXXL,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const Spacer(),
-                  ValueListenableBuilder(
-                    valueListenable: controller.refreshCoolDown,
-                    builder: (context, refreshCoolDown, child) {
-                      if(refreshCoolDown<1){
-                        return IconButton(onPressed: () {
-                          vibrateNow();
-                          controller.refreshCaptcha();
-                        }, icon: Icon(Icons.refresh_rounded,color: theme.primary,));
-                      }
-                      else{
-                        return Text(
-                          "Refresh in $refreshCoolDown s",
-                          style: TextStyle(
-                            color: theme.redDanger
-                          ),
-                        );
-                      }
-                    },
-                  )
-                ],
+                    const Spacer(),
+                    ValueListenableBuilder(
+                      valueListenable: controller.captchaRefreshCooldown,
+                      builder: (context, refreshCoolDown, child) {
+                        if(refreshCoolDown<1){
+                          return IconButton(onPressed: () {
+                            vibrateNow();
+                            controller.refreshCaptcha();
+                          }, icon: Icon(Icons.refresh_rounded,color: theme.primary,));
+                        }
+                        else{
+                          return Text(
+                            "Refresh in $refreshCoolDown s",
+                            style: TextStyle(
+                              color: theme.redDanger
+                            ),
+                          );
+                        }
+                      },
+                    )
+                  ],
+                ),
               ),
               40.heightBox(),
               FutureBuilder(
@@ -96,6 +100,13 @@ class RegisterCaptchaPage extends StatelessWidget {
                 },
               ),
               20.heightBox(),
+              Text(
+                "Please type the letters inside the box above\n(Case sensitive)",
+                style: TextStyle(
+                  color: theme.text1
+                ),
+              ),
+              20.heightBox(),
               Row(
                 children: [
                   Expanded(
@@ -110,7 +121,7 @@ class RegisterCaptchaPage extends StatelessWidget {
                       decoration: InputDecoration(
                           border: InputBorder.none,
                           focusColor: theme.primary,
-                          hintText: "Rewrite the above text here",
+                          hintText: "Type here...",
                           hintStyle: TextStyle(
                               color: theme.text2
                           )

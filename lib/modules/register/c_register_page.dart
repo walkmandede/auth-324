@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auth_324/_common/constants/app_functions.dart';
+import 'package:auth_324/_common/models/m_password_model.dart';
 import 'package:auth_324/_services/overlays_services/dialog/dialog_service.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
@@ -21,15 +22,25 @@ class RegisterPageController extends GetxController{
   ValueNotifier<bool> xValidCaptcha = ValueNotifier(false);
   PageController pageController = PageController();
   LocalCaptchaController localCaptchaController = LocalCaptchaController();
-  Timer timer = Timer(const Duration(seconds: 10), () {
+  Timer captchaTimer = Timer(const Duration(seconds: 10), () {
 
   },);
-  final int _timerInSecond = 10;
-  ValueNotifier<int> refreshCoolDown = ValueNotifier(10);
+  Timer otpTimer = Timer(const Duration(seconds: 30), () {
+
+  },);
+  final int _captchaTimerInSecond = 10;
+  final int _otpTimerInSecond = 30;
+  ValueNotifier<int> captchaRefreshCooldown = ValueNotifier(0);
+  ValueNotifier<int> otpRefreshCooldown = ValueNotifier(0);
   ValueNotifier<bool> xObscured = ValueNotifier(true);
+  ValueNotifier<PasswordModel> passwordModel = ValueNotifier(
+    PasswordModel.fromString(password: "")
+  );
+  ValueNotifier<EnumPasswordAIStrength?> passwordAiScore = ValueNotifier(null);
+  Timer aiCheckTimer = Timer(const Duration(seconds: 3), () {
 
-
-
+  },);
+  
   @override
   void onInit() {
     super.onInit();
@@ -38,7 +49,9 @@ class RegisterPageController extends GetxController{
 
   @override
   void onClose() {
-    timer.cancel();
+    captchaTimer.cancel();
+    otpTimer.cancel();
+    aiCheckTimer.cancel();
     super.onClose();
   }
 
@@ -72,23 +85,39 @@ class RegisterPageController extends GetxController{
     refreshCaptcha();
   }
 
-  void _resetTimer(){
-    timer.cancel();
-    refreshCoolDown.value = _timerInSecond;
-    timer = Timer.periodic(
-        const Duration(seconds: 1),
-        (timer) {
-          refreshCoolDown.value = _timerInSecond - timer.tick;
-          if(refreshCoolDown.value < 1){
-            timer.cancel();
-          }
-        },
+  void _resetCaptchaTimer(){
+    captchaTimer.cancel();
+    captchaRefreshCooldown.value = _captchaTimerInSecond;
+    captchaTimer = Timer.periodic(
+      const Duration(seconds: 1),
+          (timer) {
+        captchaRefreshCooldown.value = _captchaTimerInSecond - timer.tick;
+        if(captchaRefreshCooldown.value < 1){
+          timer.cancel();
+        }
+      },
+    );
+  }
+
+  void _resetOtpTimer(){
+    otpTimer.cancel();
+    otpRefreshCooldown.value = _otpTimerInSecond;
+    otpTimer = Timer.periodic(
+      const Duration(seconds: 1),
+          (timer) {
+            otpRefreshCooldown.value = _otpTimerInSecond - timer.tick;
+        if(otpRefreshCooldown.value < 1){
+          timer.cancel();
+        }
+      },
     );
   }
 
   void refreshCaptcha(){
-    localCaptchaController.refresh();
-    _resetTimer();
+    if(captchaRefreshCooldown.value<=0){
+      localCaptchaController.refresh();
+      _resetCaptchaTimer();
+    }
   }
 
   Future<void> validateCaptcha() async{
@@ -115,13 +144,7 @@ class RegisterPageController extends GetxController{
 
   Future<void> onClickEmailNext() async{
     DialogService().showLoadingDialog();
-    bool result = false;
-    try{
-      result = await EmailOTP.sendOTP(email: txtEmail.text);
-    }
-    catch(e1,e2){
-      saveLogFromException(e1, e2);
-    }
+    bool result = await sendOTP();
     DialogService().dismissDialog();
     if(result){
       pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.linear);
@@ -129,7 +152,20 @@ class RegisterPageController extends GetxController{
     else{
       DialogService().showTransactionDialog(text: "Something went wrong! Try again later!");
     }
+  }
 
+  Future<bool> sendOTP() async{
+    bool result = false;
+    if(otpRefreshCooldown.value<=0){
+      _resetOtpTimer();
+      try{
+        result = await EmailOTP.sendOTP(email: txtEmail.text);
+      }
+      catch(e1,e2){
+        saveLogFromException(e1, e2);
+      }
+    }
+    return result;
   }
 
   Future<void> onClickOtpNext() async{
@@ -160,6 +196,20 @@ class RegisterPageController extends GetxController{
 
   Future<void> onClickCaptchaNext() async{
     pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.linear);
+  }
+
+  void updatePasswordModel() {
+    passwordModel.value = PasswordModel.fromString(password: txtPassword.text);
+    aiCheckTimer.cancel();
+    passwordAiScore.value = null;
+    aiCheckTimer = Timer(const Duration(milliseconds: 3), () async{
+      try{
+        passwordAiScore.value = await passwordModel.value.getAiScore();
+      }
+      catch(e){
+        //
+      }
+    },);
   }
 
 }
