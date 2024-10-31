@@ -22,10 +22,7 @@ void main() async {
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     await Future.delayed(const Duration(seconds: 1));
   } catch (e1, e2) {
-    superPrint(e1);
-    superPrint(e2);
-    saveLogFromException(e1, e2);
-    null;
+    //
   }
   runApp(const MyApp());
 }
