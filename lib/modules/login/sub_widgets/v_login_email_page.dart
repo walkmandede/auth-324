@@ -27,7 +27,7 @@ class LoginEmailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "What’s your email?".tr,
+                "Enter your email".tr,
                 style: TextStyle(
                   color: theme.text1,
                   fontSize: AppConstants.fontSizeXXL,

@@ -153,12 +153,12 @@ class RegisterPasswordPage extends StatelessWidget {
                     child: SizedBox(
                       height: AppConstants.baseButtonHeightM,
                       child: ValueListenableBuilder(
-                        valueListenable: controller.xValidEmail,
-                        builder: (context, xValid, child) {
+                        valueListenable: controller.passwordModel,
+                        builder: (context, passwordModel, child) {
                           return ElevatedButton(
                             onPressed: () {
                               vibrateNow();
-                              if(xValid){
+                              if(passwordModel.xShouldPass()){
                                 controller.onClickPasswordNext();
                               }
                             },
@@ -170,7 +170,7 @@ class RegisterPasswordPage extends StatelessWidget {
                                     horizontal: AppConstants.basePadding*1.5
                                 ),
                                 elevation: 0,
-                                backgroundColor: !xValid?theme.primary.withOpacity(0.2):theme.primary
+                                backgroundColor: !passwordModel.xShouldPass()?theme.primary.withOpacity(0.2):theme.primary
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -178,7 +178,7 @@ class RegisterPasswordPage extends StatelessWidget {
                                 Text(
                                   "Next".tr,
                                   style: TextStyle(
-                                      color:!xValid?theme.primary.withOpacity(0.6):theme.primaryAccent,
+                                      color:!passwordModel.xShouldPass()?theme.primary.withOpacity(0.6):theme.primaryAccent,
                                       fontSize: AppConstants.fontSizeL,
                                       fontWeight: FontWeight.w600
                                   ),
@@ -187,7 +187,7 @@ class RegisterPasswordPage extends StatelessWidget {
                                 Icon(
                                   Icons.arrow_forward_rounded,
                                   size: 20,
-                                  color: !xValid?theme.primary.withOpacity(0.6):theme.primaryAccent,
+                                  color: !passwordModel.xShouldPass()?theme.primary.withOpacity(0.6):theme.primaryAccent,
                                 )
                               ],
                             ),

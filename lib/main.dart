@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:auth_324/_common/models/m_password_model.dart';
 import 'package:auth_324/modules/auth_main/v_auth_main_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -14,11 +15,15 @@ import '_services/logger_services/c_logger_controller.dart';
 import '_services/theme_services/c_theme_controller.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   try {
-    WidgetsFlutterBinding.ensureInitialized();
+
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     await Future.delayed(const Duration(seconds: 1));
   } catch (e1, e2) {
+    superPrint(e1);
+    superPrint(e2);
     saveLogFromException(e1, e2);
     null;
   }

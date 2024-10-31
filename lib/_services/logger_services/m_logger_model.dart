@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:get/get.dart';
 import '../../_common/constants/app_functions.dart';
-import '../network_services/api_response.dart';
 
 enum EnumLoggerType{
   zonedGuard,
@@ -13,7 +12,29 @@ enum EnumLoggerType{
 
 class LoggerModel{
   int id;
-  DateTime dateTime;
+  DateTime dateTime;  // factory LoggerModel.fromNetworkCall({required ApiResponse apiResponse}){
+  //
+  //   String currentPage = "-";
+  //   try{
+  //     currentPage = Get.currentRoute;
+  //   }
+  //   catch(e1,e2){
+  //     saveLogFromException(e1, e2);
+  //     null;
+  //   }
+  //
+  //   return LoggerModel(
+  //     dateTime: DateTime.now(),
+  //     title: "${apiResponse.requestMethod} - ${apiResponse.requestUrl}",
+  //     content: {
+  //       "statusCode" : max(apiResponse.apiStatusCode,apiResponse.statusCode),
+  //       "responseBody" : apiResponse.bodyString.toString()
+  //     },
+  //     currentPage: currentPage,
+  //     enumLoggerType: EnumLoggerType.backendApi
+  //   );
+  // }
+
   EnumLoggerType enumLoggerType;
   String title;
   Map<String,dynamic> content;
@@ -40,28 +61,6 @@ class LoggerModel{
     );
   }
 
-  factory LoggerModel.fromNetworkCall({required ApiResponse apiResponse}){
-
-    String currentPage = "-";
-    try{
-      currentPage = Get.currentRoute;
-    }
-    catch(e1,e2){
-      saveLogFromException(e1, e2);
-      null;
-    }
-
-    return LoggerModel(
-      dateTime: DateTime.now(),
-      title: "${apiResponse.requestMethod} - ${apiResponse.requestUrl}",
-      content: {
-        "statusCode" : max(apiResponse.apiStatusCode,apiResponse.statusCode),
-        "responseBody" : apiResponse.bodyString.toString()
-      },
-      currentPage: currentPage,
-      enumLoggerType: EnumLoggerType.backendApi
-    );
-  }
 
   factory LoggerModel.fromExceptions({required dynamic title,required dynamic stackTrace}){
 

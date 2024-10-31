@@ -234,11 +234,11 @@ class LoginController extends GetxController{
     if(dbResult is String){
       // fail
       DialogService().showTransactionDialog(text: dbResult);
-      Get.offAll(()=>  HomePage(email: txtEmail.text));
     }
     else{
       superPrint(dbResult);
-      //fail
+      //success
+      Get.offAll(()=>  HomePage(email: txtEmail.text));
     }
   }
 

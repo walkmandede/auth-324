@@ -79,6 +79,10 @@ class PasswordModel{
     };
   }
 
+  bool xShouldPass(){
+    return xHasUpperCase && xHasLowerCase && xHasSpecial && xHasDigit && password.length >=8;
+  }
+
   String getEstimatedDurationForBruteForce(){
     String result = "";
     return result;

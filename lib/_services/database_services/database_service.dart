@@ -1,91 +1,75 @@
-import 'package:auth_324/_common/constants/app_functions.dart';
-import 'package:mongo_dart/mongo_dart.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseService {
-  final String _connectionString = "mongodb+srv://walkmandede:kokolusoepotato@uosbuc.c0oppu4.mongodb.net/cet324/";
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String _collectionName = "users";
 
+  // Login function to check email and password in Firestore
   Future<dynamic> login({
     required String email,
     required String password,
   }) async {
-    Db? db;
     try {
-      db = await Db.create(_connectionString);
-      await db.open();
-      final collection = db.collection(_collectionName);
+      final querySnapshot = await _firestore
+          .collection(_collectionName)
+          .where("email", isEqualTo: email)
+          .where("password", isEqualTo: password) // Store hashed passwords for security
+          .get();
 
-      final user = await collection.findOne({
-        "email": email,
-        "password": password, // Note: Storing plain text passwords is insecure.
-      });
-
-      if (user != null) {
-        return user; // Success: return null
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.data(); // Success: return user data
       } else {
         return "Invalid email or password"; // Failure: return error message
       }
     } catch (e) {
       return "Error during login: $e"; // Failure: return error message
-    } finally {
-      await db?.close(); // Ensure the database is closed
     }
   }
 
+  // Register function to add a new user to Firestore
   Future<String?> register({
     required String email,
     required String password,
   }) async {
-    Db? db;
     try {
-      db = await Db.create(_connectionString);
-      await db.open();
-      final collection = db.collection(_collectionName);
+      // Check if the user already exists
+      final existingUser = await _firestore
+          .collection(_collectionName)
+          .where("email", isEqualTo: email)
+          .get();
 
-      final existingUser = await collection.findOne({"email": email});
-      if (existingUser != null) {
+      if (existingUser.docs.isNotEmpty) {
         return "Email already registered"; // Failure: return error message
       }
 
-      final writeResult = await collection.insertOne({
+      // Add new user if email is not registered
+      await _firestore.collection(_collectionName).add({
         "email": email,
         "password": password, // Consider hashing the password for security
       });
-      superPrint(writeResult.errmsg);
-      if(writeResult.isSuccess || writeResult.isSuspendedSuccess || writeResult.isPartialSuccess){
-        return null; // Success: return null
-      }
-      else{
-        return writeResult.errmsg??"Something went wrong!";
-      }
+
+      return null; // Success: return null
     } catch (e) {
       return "Error during registration: $e"; // Failure: return error message
-    } finally {
-      await db?.close(); // Ensure the database is closed
     }
   }
 
-  /// return null if there is no user, return string if there is one
+  /// Checks if an email is already registered
+  /// Returns null if there is no user, or a string error message if email is registered
   Future<String?> isEmailRegistered(String email) async {
-    Db? db;
     try {
-      db = await Db.create(_connectionString);
-      await db.open();
-      final collection = db.collection(_collectionName);
+      final querySnapshot = await _firestore
+          .collection(_collectionName)
+          .where("email", isEqualTo: email)
+          .get();
 
-      final user = await collection.findOne({"email": email});
-      if(user!=null){
-        //has user
-        return "This email has already registered!";
-      }
-      else{
-        return null;
+      if (querySnapshot.docs.isNotEmpty) {
+        return "This email is already registered!";
+      } else {
+        return null; // Email not registered
       }
     } catch (e) {
       return "Unable to connect to the server!"; // Return error message on failure
-    } finally {
-      await db?.close();
     }
   }
-
 }

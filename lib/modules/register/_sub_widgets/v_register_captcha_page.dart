@@ -101,7 +101,7 @@ class RegisterCaptchaPage extends StatelessWidget {
               ),
               20.heightBox(),
               Text(
-                "Please type the letters inside the box above\n(Case sensitive)",
+                "Please type the letters inside the box above\n(Case insensitive)",
                 style: TextStyle(
                   color: theme.text1
                 ),
