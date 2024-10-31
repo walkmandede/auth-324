@@ -5,7 +5,7 @@ class DatabaseService {
   final String _connectionString = "mongodb+srv://walkmandede:kokolusoepotato@uosbuc.c0oppu4.mongodb.net/cet324/";
   final String _collectionName = "users";
 
-  Future<String?> login({
+  Future<dynamic> login({
     required String email,
     required String password,
   }) async {
@@ -21,7 +21,7 @@ class DatabaseService {
       });
 
       if (user != null) {
-        return null; // Success: return null
+        return user; // Success: return null
       } else {
         return "Invalid email or password"; // Failure: return error message
       }
@@ -64,4 +64,28 @@ class DatabaseService {
       await db?.close(); // Ensure the database is closed
     }
   }
+
+  /// return null if there is no user, return string if there is one
+  Future<String?> isEmailRegistered(String email) async {
+    Db? db;
+    try {
+      db = await Db.create(_connectionString);
+      await db.open();
+      final collection = db.collection(_collectionName);
+
+      final user = await collection.findOne({"email": email});
+      if(user!=null){
+        //has user
+        return "This email has already registered!";
+      }
+      else{
+        return null;
+      }
+    } catch (e) {
+      return "Unable to connect to the server!"; // Return error message on failure
+    } finally {
+      await db?.close();
+    }
+  }
+
 }

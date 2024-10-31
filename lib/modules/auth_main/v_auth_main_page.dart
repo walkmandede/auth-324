@@ -2,6 +2,7 @@ import 'package:auth_324/_common/_widgets/w_auth_bg.dart';
 import 'package:auth_324/_common/constants/app_assets.dart';
 import 'package:auth_324/_services/others/extensions.dart';
 import 'package:auth_324/modules/auth_main/c_auth_main_controller.dart';
+import 'package:auth_324/modules/login/v_login_page.dart';
 import 'package:auth_324/modules/register/v_register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -100,7 +101,7 @@ class AuthMainPage extends StatelessWidget {
                           GestureDetector(
                             onTap: () async {
                               vibrateNow();
-                              // Get.offAll(() => const RegisterPage());
+                              Get.offAll(() => const LoginPage());
                             },
                             child: Container(
                               width: Get.width,

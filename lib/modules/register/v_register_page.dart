@@ -28,6 +28,8 @@ class RegisterPage extends StatelessWidget {
                 resizeToAvoidBottomInset: false,
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
+                  title: Text("Register",style: TextStyle(color: theme.text1,fontSize: 20,fontWeight: FontWeight.w700),),
+                  centerTitle: true,
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   leading: BackButton(
@@ -48,7 +50,6 @@ class RegisterPage extends StatelessWidget {
                           RegisterEmailPage(theme: theme),
                           RegisterEmailOtpPage(theme: theme),
                           RegisterPasswordPage(theme: theme),
-                          RegisterEmailPage(theme: theme),
                         ],
                       ),
                     ),

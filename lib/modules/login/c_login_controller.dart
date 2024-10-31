@@ -1,3 +1,6 @@
+import 'package:auth_324/modules/home/v_home_page.dart';
+import 'package:auth_324/modules/register/v_register_page.dart';
+import 'package:get/get.dart';
 import 'dart:async';
 import 'package:auth_324/_common/constants/app_functions.dart';
 import 'package:auth_324/_common/models/m_password_model.dart';
@@ -7,10 +10,9 @@ import 'package:auth_324/_services/overlays_services/dialog/dialog_service.dart'
 import 'package:auth_324/modules/auth_main/v_auth_main_page.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:local_captcha/local_captcha.dart';
 
-class RegisterPageController extends GetxController{
+class LoginController extends GetxController{
 
   TextEditingController txtEmail = TextEditingController(text: "");
   TextEditingController txtOtp = TextEditingController(text: "");
@@ -34,14 +36,7 @@ class RegisterPageController extends GetxController{
   ValueNotifier<int> captchaRefreshCooldown = ValueNotifier(0);
   ValueNotifier<int> otpRefreshCooldown = ValueNotifier(0);
   ValueNotifier<bool> xObscured = ValueNotifier(true);
-  ValueNotifier<PasswordModel> passwordModel = ValueNotifier(
-    PasswordModel.fromString(password: "")
-  );
-  ValueNotifier<EnumPasswordAIStrength?> passwordAiScore = ValueNotifier(null);
-  Timer aiCheckTimer = Timer(const Duration(seconds: 3), () {
 
-  },);
-  
   @override
   void onInit() {
     super.onInit();
@@ -52,14 +47,13 @@ class RegisterPageController extends GetxController{
   void onClose() {
     captchaTimer.cancel();
     otpTimer.cancel();
-    aiCheckTimer.cancel();
     super.onClose();
   }
 
 
   Future<void> initLoad() async{
     EmailOTP.config(
-      appName: 'E-commerce Application - Register OTP',
+      appName: 'E-commerce Application - Login OTP',
       otpType: OTPType.numeric,
       expiry : 30000,
       emailTheme: EmailTheme.v5,
@@ -67,22 +61,22 @@ class RegisterPageController extends GetxController{
       otpLength: 6,
     );
     txtEmail.addListener(() {
-        const pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
-            r'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-'
-            r'\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*'
-            r'[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4]'
-            r'[0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9]'
-            r'[0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\'
-            r'x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])';
-        final regex = RegExp(pattern);
-        final value = txtEmail.text;
-        if(value.isEmpty || !regex.hasMatch(value)){
-          xValidEmail.value = false;
-        }
-        else{
-          xValidEmail.value = true;
-        }
-      },);
+      const pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
+          r'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-'
+          r'\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*'
+          r'[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4]'
+          r'[0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9]'
+          r'[0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\'
+          r'x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])';
+      final regex = RegExp(pattern);
+      final value = txtEmail.text;
+      if(value.isEmpty || !regex.hasMatch(value)){
+        xValidEmail.value = false;
+      }
+      else{
+        xValidEmail.value = true;
+      }
+    },);
     refreshCaptcha();
   }
 
@@ -106,7 +100,7 @@ class RegisterPageController extends GetxController{
     otpTimer = Timer.periodic(
       const Duration(seconds: 1),
           (timer) {
-            otpRefreshCooldown.value = _otpTimerInSecond - timer.tick;
+        otpRefreshCooldown.value = _otpTimerInSecond - timer.tick;
         if(otpRefreshCooldown.value < 1){
           timer.cancel();
         }
@@ -149,8 +143,15 @@ class RegisterPageController extends GetxController{
     final dbResult = await databaseService.isEmailRegistered(txtEmail.text);
     superPrint(dbResult);
     DialogService().dismissDialog();
-    if(dbResult!=null){
-      DialogService().showTransactionDialog(text: dbResult.toString());
+    if(dbResult==null){
+      DialogService().showTransactionDialog(
+        text: "There is no such email in our system! Please register to continue!",
+        yesButtonText: "Register Now",
+        noButtonText: "Cancel",
+        onClickYes: () {
+          Get.offAll(()=> const RegisterPage());
+        },
+      );
     }
     else{
       DialogService().showLoadingDialog();
@@ -209,7 +210,7 @@ class RegisterPageController extends GetxController{
   Future<void> onClickPasswordNext() async{
 
     DialogService().showLoadingDialog(loadingText: "Loading ... Please wait!");
-    String? dbResult = "Something went wrong!";
+    dynamic dbResult = "Something went wrong!";
     try{
       EncryptService encryptService = EncryptService();
       final email = txtEmail.text;
@@ -219,9 +220,9 @@ class RegisterPageController extends GetxController{
         throw Exception("Fail to encrypt password!");
       }
       DatabaseService databaseService = DatabaseService();
-      dbResult = await databaseService.register(
-          email: email,
-          password: encryptedPwd,
+      dbResult = await databaseService.login(
+        email: email,
+        password: encryptedPwd,
       );
     }
     catch(e){
@@ -229,34 +230,21 @@ class RegisterPageController extends GetxController{
       //
     }
     DialogService().dismissDialog();
-
-    if(dbResult==null){
-      //success
-      Get.offAll(()=> const AuthMainPage());
-      DialogService().showTransactionDialog(text: "Successfully registered!\nPlease log in to continue!");
+    superPrint(dbResult);
+    if(dbResult is String){
+      // fail
+      DialogService().showTransactionDialog(text: dbResult);
+      Get.offAll(()=>  HomePage(email: txtEmail.text));
     }
     else{
-      DialogService().showTransactionDialog(text: dbResult);
+      superPrint(dbResult);
+      //fail
     }
   }
 
 
   Future<void> onClickCaptchaNext() async{
     pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.linear);
-  }
-
-  void updatePasswordModel() {
-    passwordModel.value = PasswordModel.fromString(password: txtPassword.text);
-    aiCheckTimer.cancel();
-    passwordAiScore.value = null;
-    aiCheckTimer = Timer(const Duration(milliseconds: 3), () async{
-      try{
-        passwordAiScore.value = await passwordModel.value.getAiScore();
-      }
-      catch(e){
-        //
-      }
-    },);
   }
 
 }
